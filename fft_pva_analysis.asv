@@ -1,0 +1,9 @@
+test_dff = dff_data'; 
+transform = fft(test_dff,10,1);
+transform(1,:) = []; % why do we remove this? is this the autocorrelation e.g. period of 1?
+n = 10;
+freq = (1:n/2)/(n/2); % FREQUENCY X-AXIS for fft
+phase = angle(transform(1:8,:));
+phase_value = -squeeze(phase(2, :)); %% This is actually the negative of the phase. However, in order to maintain consistency with Green et al., I realized I had to make the FFT phase negative.
+
+figure;plot(1:9,transform)
