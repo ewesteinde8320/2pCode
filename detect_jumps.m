@@ -1,7 +1,7 @@
-function [jump_array_down, jump_array] = detect_jumps(roiData, ftT_down, ftData, jump_window)
+function [jump_array_down, jump_array] = detect_jumps(ftT, jump_window, volRate)
 
 %% downsampled jump idx
-    yChannel = ftT_down.PanelsY{1}; 
+    yChannel = ftT.PanelsY{1}; 
     yChannel_temp = yChannel - [1 2 3 4];
     
     for row = 1:size(yChannel_temp,1)
@@ -43,8 +43,7 @@ function [jump_array_down, jump_array] = detect_jumps(roiData, ftT_down, ftData,
             count = count + 1;
         end
     end
-
-    volRate = roiData.sampRate(1); 
+ 
     window_datapoints = round(jump_window*volRate); 
     jump_idx = find(transition == 1); 
     jump_array = zeros(length(jump_idx),3); 
@@ -63,14 +62,14 @@ function [jump_array_down, jump_array] = detect_jumps(roiData, ftT_down, ftData,
     jump_array_down = jump_array;
     
     %Debugging plot 
-    figure()
-    plot(yChannel)
-    hold on
-    plot(transition,'ro')
+%     figure()
+%     plot(yChannel)
+%     hold on
+%     plot(transition,'ro')
 
 %% original sampling rate
 
-    yChannel = ftData.PanelsY{1}; 
+    yChannel = ftT.PanelsY{1}; 
     yChannel_temp = yChannel - [1 2 3 4];
     
     for row = 1:size(yChannel_temp,1)
@@ -112,8 +111,7 @@ function [jump_array_down, jump_array] = detect_jumps(roiData, ftT_down, ftData,
             count = count + 1;
         end
     end
-
-    volRate = roiData.sampRate(1); 
+ 
     window_datapoints = round(jump_window*60); 
     jump_idx = find(transition == 1); 
     jump_array = zeros(length(jump_idx),3); 

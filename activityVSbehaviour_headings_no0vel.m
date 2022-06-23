@@ -1,4 +1,4 @@
-function activityVSbehaviour_headings_no0vel(rho, theta, roiData, threshold, Z, Zf,ftT_down, trialMd, expMd, nTrial, measurement, savePlots, interactive,lineplotDir,expID)      
+function activityVSbehaviour_headings_no0vel(rho, theta, roiData, threshold, Z, Zf,ftT, trialMd, expMd, nTrial, measurement, savePlots, interactive,lineplotDir,expID)      
 
     if interactive
         prefHead = input('preferred heading: ');
@@ -6,7 +6,13 @@ function activityVSbehaviour_headings_no0vel(rho, theta, roiData, threshold, Z, 
         option = 'manual';
     else
 
-        mean_mode(1) = mean(wrapTo360(rad2deg(theta.*rho)));
+        [x, y] = pol2cart(theta,rho); 
+        meanx = sum(x)/length(x); 
+        meany = sum(y)/length(y);
+        [mean_theta, ~] = cart2pol(meanx, meany);
+        
+        
+        mean_mode(1) = wrapTo360(rad2deg(mean_theta));
         mean_mode(2) = mode(wrapTo360(rad2deg(theta.*rho)));
 
         if measurement == 1
@@ -24,11 +30,12 @@ function activityVSbehaviour_headings_no0vel(rho, theta, roiData, threshold, Z, 
         end
     end
     
-    no0vel_idx = find(ftT_down.moveSpeed{1} > threshold);
-    vf = ftT_down.fwSpeed{1}(no0vel_idx);
-    vs = ftT_down.sideSpeed{1}(no0vel_idx);
-    vy = ftT_down.yawSpeed{1}(no0vel_idx);
-    angle = ftT_down.cueAngle{1}(no0vel_idx); 
+    total_mov_mm = abs(ftT.velFor{1}) + abs(ftT.velSide{1}) + abs(ftT.velYaw{1}*4.5);
+    no0vel_idx = find(total_mov_mm > threshold);
+    vf = ftT.velFor{1}(no0vel_idx);
+    vs = ftT.velSide{1}(no0vel_idx);
+    vy = ftT.velYaw{1}(no0vel_idx);
+    angle = ftT.cueAngle{1}(no0vel_idx); 
     
     trial_roiData = roiData(roiData.trialNum == nTrial,:);
     %% plot activity - behaviour relationships at diff headings
@@ -41,19 +48,19 @@ function activityVSbehaviour_headings_no0vel(rho, theta, roiData, threshold, Z, 
 
 
         activityTable = Z;
-        temp_0 = zeros(size(Z(Z.roiName == 1,1),1),1);
+        temp_0 = zeros(size(Z.(3){1},1),1);
         activity_all = zeros(size(temp_0(no0vel_idx),1),1); 
         for roi = 1:size(trial_roiData,1)
-            activity_roi = activityTable.data(activityTable.roiName == roi);
+            activity_roi = activityTable.(3){roi};
             activity_all = activity_all + activity_roi(no0vel_idx);
         end
         
         if regexp(expMd.expName{1}, 'PFL2_3')
 
-            activity1 = activityTable.data(activityTable.roiName == 1); 
+            activity1 = activityTable.(3){1}; 
             activity1 = activity1(no0vel_idx);
 
-            activity2 = activityTable.data(activityTable.roiName == 2); 
+            activity2 = activityTable.(3){2}; 
             activity2 = activity2(no0vel_idx);
 
             activity = activity1 - activity2;
@@ -317,9 +324,9 @@ function activityVSbehaviour_headings_no0vel(rho, theta, roiData, threshold, Z, 
 %             vs_lim = 0.15;
 %             s_lim = 0.2;
 % 
-%             vf_edges = [min(ftT_down.fwSpeed{1}):0.2:max(ftT_down.fwSpeed{1})]; 
-%             vs_edges = [min(ftT_down.sideSpeed{1}):0.2:max(ftT_down.sideSpeed{1})];
-%             vy_edges = [min(ftT_down.yawSpeed{1}):0.1:max(ftT_down.yawSpeed{1})];
+%             vf_edges = [min(ftT.fwSpeed{1}):0.2:max(ftT.fwSpeed{1})]; 
+%             vs_edges = [min(ftT.sideSpeed{1}):0.2:max(ftT.sideSpeed{1})];
+%             vy_edges = [min(ftT.yawSpeed{1}):0.1:max(ftT.yawSpeed{1})];
 %             s_edges = [0:0.2:max(speed)];
 % 
 % 

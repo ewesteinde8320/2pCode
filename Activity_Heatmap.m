@@ -1,9 +1,9 @@
-function Activity_Heatmap(ftT_down, roiData, Z, Zf, nTrial,savePlots, heatmapDir, expID)
+function Activity_Heatmap(ftT, roiData, Z, Zf, nTrial,savePlots, heatmapDir, expID)
 
-    vf = ftT_down.fwSpeed{1};
-    vs = ftT_down.sideSpeed{1};
-    vy = ftT_down.yawSpeed{1};
-    angle = ftT_down.cueAngle{1};
+    vf = ftT.velFor{1};
+    vs = ftT.velSide{1};
+    vy = ftT.velYaw{1};
+    angle = ftT.cueAngle{1};
     
     trial_roiData = roiData(roiData.trialNum == nTrial,:);
     
@@ -16,12 +16,12 @@ function Activity_Heatmap(ftT_down, roiData, Z, Zf, nTrial,savePlots, heatmapDir
             activity_name = 'dff'; 
         end
         
-        activity_temp = zeros(size(activity(activity.roiName == 1,1)));
-        for roi = 1:size(trial_roiData,1)
-            activity_temp =  activity_temp + activity.data(activity.roiName == roi,:);
+        activity_temp = zeros(size(activity.(3){1}));
+        for roi = 1:size(Z,1)
+            activity_temp =  activity_temp + activity.(3){roi};
         end
         
-        activity_values = activity_temp/max(activity.roiName);
+        activity_values = activity_temp/size(Z,1);
 
         x_values = angle;
         y_values = vf;
@@ -110,10 +110,10 @@ function Activity_Heatmap(ftT_down, roiData, Z, Zf, nTrial,savePlots, heatmapDir
             for type = 1:2
 
                 if type == 1
-                    activity_values = Z.data(Z.roiName == roi);
+                    activity_values = Z.(3){roi};
                     activity_name = 'Z';
                 else
-                    activity_values = Zf.data(Zf.roiName == roi);
+                    activity_values = Zf.(3){roi};
                     activity_name = 'dff'; 
                 end
 
@@ -208,7 +208,7 @@ function Activity_Heatmap(ftT_down, roiData, Z, Zf, nTrial,savePlots, heatmapDir
                 end
                 
                 % L - R
-                activity_values = activity.data(activity.roiName == 1,:) - activity.data(activity.roiName == 2,:);
+                activity_values = activity.(3){1} - activity.(3){2};
 
                 x_values = angle;
                 y_values = vf;

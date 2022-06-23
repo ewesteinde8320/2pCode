@@ -5,7 +5,13 @@ function activityVSbehaviour_headings_sepROIs(rho, theta, roiData, Z, ftT_down, 
         option = 'manual';
     else
 
-        mean_mode(1) = mean(wrapTo360(rad2deg(theta.*rho)));
+        [x, y] = pol2cart(theta,rho); 
+        meanx = sum(x)/length(x); 
+        meany = sum(y)/length(y);
+        [mean_theta, ~] = cart2pol(meanx, meany);
+        
+        
+        mean_mode(1) = wrapTo360(rad2deg(mean_theta));
         mean_mode(2) = mode(wrapTo360(rad2deg(theta.*rho)));
 
         if measurement == 1
@@ -24,15 +30,13 @@ function activityVSbehaviour_headings_sepROIs(rho, theta, roiData, Z, ftT_down, 
     end
     trial_roiData = roiData(roiData.trialNum == nTrial,:);
     threshold = 0.5;
-    mov = ftT_down.sideSpeed{1}/4.5 + ftT_down.fwSpeed{1}/4.5 + ftT_down.yawSpeed{1};
-    speed = sqrt(ftT_down.sideSpeed{1}.^2 + ftT_down.fwSpeed{1}.^2);
-    %vy = ftT_down.yawSpeed{1}; 
-    %no0vel_idx = find(vy > threshold/4.5 | vy < -threshold/4.5);
-    no0vel_idx = find(mov > threshold); 
+    total_mov_mm = abs(ftT_down.velFor{1}) + abs(ftT_down.velSide{1}) + abs(ftT_down.velYaw{1}*4.5);
+    no0vel_idx = find(total_mov_mm > threshold);
+    speed = sqrt(ftT_down.velFor{1}.^2 + ftT_down.velSide{1}.^2);
     speed = speed(no0vel_idx); 
-    vf = ftT_down.fwSpeed{1}(no0vel_idx);
-    vs = ftT_down.sideSpeed{1}(no0vel_idx);
-    vy = ftT_down.yawSpeed{1}(no0vel_idx);
+    vf = ftT_down.velFor{1}(no0vel_idx);
+    vs = ftT_down.velSide{1}(no0vel_idx);
+    vy = ftT_down.velYaw{1}(no0vel_idx);
     angle = ftT_down.cueAngle{1}(no0vel_idx); 
 
     %% plot activity - behaviour relationships at diff headings
@@ -45,8 +49,8 @@ function activityVSbehaviour_headings_sepROIs(rho, theta, roiData, Z, ftT_down, 
 
 
         activityTable = Z;
-        activity1 = activityTable.data(activityTable.roiName == 1); 
-        activity2 = activityTable.data(activityTable.roiName == 2); 
+        activity1 = activityTable.(3){1}; 
+        activity2 = activityTable.(3){2}; 
         
         activity(:,1) = activity1(no0vel_idx);
         activity(:,2) = activity2(no0vel_idx);

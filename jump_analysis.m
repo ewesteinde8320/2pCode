@@ -1,4 +1,4 @@
-%% get folders from rootDir
+ %% get folders from rootDir
 folders = get_folders(rootDir);
 
 %% Process each folder
@@ -32,7 +32,7 @@ for ff = 1:folderNum
             roiData = load_roi_data(expList, folder);
 
             % Load FicTrac data
-            ftData = load_ft_data(expList, folder);
+            [~,ftData, ~] = load_ft_data(expList, folder, 1, 0);
 
             % Load panels metadata
             panelsMetadata = load_panels_metadata(expList, folder);
@@ -57,7 +57,8 @@ for ff = 1:folderNum
             windowSize = 10;
             [jump_array_down, jump_array] = detect_jumps(roiData, ftT_down, ftData, windowSize);
             
-            plot_jumps(jump_array, jump_array_down, Z, ftData, expID, nTrial, jumpDir, roiData);
+            savePlots = 0; 
+            plot_jumps(jump_array, jump_array_down, Z, ftData, expID, nTrial, jumpDir, roiData, windowSize, savePlots);
             
             
             

@@ -204,10 +204,10 @@ function foldersFailed = secondary_plots(rootDir, savePlots)
         %     [bump_mag,bump_width,adj_rs,bump_pos] = fitVonMises(midline_distances,dff_data);
         %end
         %% locate jump idxs & start & end indicies of a window around them
-             windowSize = 10;
-             [jump_array_down, jump_array] = detect_jumps(ftT, windowSize, 60);
+%             windowSize = 10;
+%             [jump_array_down, jump_array] = detect_jumps(ftT, windowSize, 60);
 %             
-             plot_jumps(jump_array, jump_array_down, ZData, ftT, expID, nTrial, jumpDir, windowSize, savePlots, 60);
+%             plot_jumps(jump_array, jump_array_down, ZData, ftT, expID, nTrial, jumpDir, windowSize, savePlots, 60);
 %             
         
         end

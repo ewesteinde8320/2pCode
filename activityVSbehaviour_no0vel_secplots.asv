@@ -42,7 +42,7 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
 
         if ~contains(expMd.expName{1},'LAL')
             for roi = 1:size(trial_roiData,1)
-                activity = activityTable.(3){roi};
+                activity = activityTable.(3){;
                 activity = activity(no0vel_idx);
 
                 % vf
@@ -108,7 +108,7 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
 
         else
                for roi = 1:size(trial_roiData,1)
-                    activity = activityTable.(3){roi};
+                    activity = activityTable.data(activityTable.roiName == roi);
                     activity = activity(no0vel_idx);
                     
                     % vf

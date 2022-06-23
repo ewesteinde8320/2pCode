@@ -1,12 +1,18 @@
-function activityVSbehaviour_headings(rho, theta, roiData, Z, Zf,ftT_down, trialMd, expMd, nTrial, measurement, savePlots, interactive,lineplotDir,expID)      
+function activityVSbehaviour_headings(rho, theta, roiData, Z, Zf,ftT, trialMd, expMd, nTrial, measurement, savePlots, interactive,lineplotDir,expID)      
 
     if interactive
         prefHead = input('preferred heading: ');
         runs = 1; 
         option = 'manual';
     else
-
-        mean_mode(1) = mean(wrapTo360(rad2deg(theta.*rho)));
+        
+        [x, y] = pol2cart(theta,rho); 
+        meanx = sum(x)/length(x); 
+        meany = sum(y)/length(y);
+        [mean_theta, ~] = cart2pol(meanx, meany);
+        
+        
+        mean_mode(1) = wrapTo360(rad2deg(mean_theta));
         mean_mode(2) = mode(wrapTo360(rad2deg(theta.*rho)));
 
         if measurement == 1
@@ -35,21 +41,21 @@ function activityVSbehaviour_headings(rho, theta, roiData, Z, Zf,ftT_down, trial
 
 
         activityTable = Z;
-        activity_all = zeros(size(Z(Z.roiName == 1,1),1),1); 
-        for roi = 1:size(trial_roiData,1)
-            activity_all = activity_all + activityTable.data(activityTable.roiName == roi);
+        activity_all = zeros(size(Z.(3){1},1),1); 
+        for roi = 1:size(Z,1)
+            activity_all = activity_all + activityTable.(3){roi};
         end
         
         if regexp(expMd.expName{1}, 'PFL2_3')
 
-            activity1 = activityTable.data(activityTable.roiName == 1); 
+            activity1 = activityTable.(3){1}; 
 
-            activity2 = activityTable.data(activityTable.roiName == 2); 
+            activity2 = activityTable.(3){2}; 
 
             activity = activity1 - activity2;
             type = 'L-R diff';
         else
-            activity = activity_all/size(trial_roiData,1);
+            activity = activity_all/size(Z,1);
             type = 'mean';
         end
 
@@ -65,14 +71,14 @@ function activityVSbehaviour_headings(rho, theta, roiData, Z, Zf,ftT_down, trial
             headings(num) = wrapTo360(prefHead + seg * (num-1));
         end
 
-        speed = sqrt(ftT_down.sideSpeed{1}.^2 + ftT_down.fwSpeed{1}.^2); 
+        speed = sqrt(ftT.velSide{1}.^2 + ftT.velFor{1}.^2); 
 
         count = 1; 
         saveBinsS = cell(1,numSeg);
         saveBinsVf = cell(1,numSeg); 
         saveBinsVs = cell(1,numSeg);
         saveBinsVy = cell(1,numSeg);
-        angle_360 = wrapTo360(ftT_down.cueAngle{1});
+        angle_360 = wrapTo360(ftT.cueAngle{1});
         legend_labels = {}; 
         VfinHead = {}; 
         VsinHead = {}; 
@@ -93,9 +99,9 @@ function activityVSbehaviour_headings(rho, theta, roiData, Z, Zf,ftT_down, trial
                     [index] = find(angle_360 < lim2 & angle_360 > lim1);
                 end
 
-                VfinHead{count} = ftT_down.fwSpeed{1}(index); 
-                VsinHead{count} = ftT_down.sideSpeed{1}(index);
-                VyinHead{count} = ftT_down.yawSpeed{1}(index);
+                VfinHead{count} = ftT.velFor{1}(index); 
+                VsinHead{count} = ftT.velSide{1}(index);
+                VyinHead{count} = ftT.velYaw{1}(index);
                 SinHead{count} = speed(index);
                 activityinHead{count} = activity(index);
 
@@ -307,9 +313,9 @@ function activityVSbehaviour_headings(rho, theta, roiData, Z, Zf,ftT_down, trial
 %             vs_lim = 0.15;
 %             s_lim = 0.2;
 % 
-%             vf_edges = [min(ftT_down.fwSpeed{1}):0.2:max(ftT_down.fwSpeed{1})]; 
-%             vs_edges = [min(ftT_down.sideSpeed{1}):0.2:max(ftT_down.sideSpeed{1})];
-%             vy_edges = [min(ftT_down.yawSpeed{1}):0.1:max(ftT_down.yawSpeed{1})];
+%             vf_edges = [min(ftT.velFor{1}):0.2:max(ftT.velFor{1})]; 
+%             vs_edges = [min(ftT.velSide{1}):0.2:max(ftT.velSide{1})];
+%             vy_edges = [min(ftT.velYaw{1}):0.1:max(ftT.velYaw{1})];
 %             s_edges = [0:0.2:max(speed)];
 % 
 % 

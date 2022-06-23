@@ -1,12 +1,12 @@
-function activityVSbehaviour_lineplots(ftT_down, Z, Zf, roiData, nTrial, expMd,savePlots,lineplotDir, expID)
+function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePlots,lineplotDir, expID)
 
     sum_mean = cell(3,1); 
-    vy = wrapTo180((ftT_down.yawSpeed{1}/ (2*pi) ) * 360); 
-    edges_vf = [min(ftT_down.fwSpeed{1}):0.5:max(ftT_down.fwSpeed{1})];
-    edges_vs = [min(ftT_down.sideSpeed{1}):0.5:max(ftT_down.sideSpeed{1})];
+    vy = wrapTo180((ftT.velYaw{1}/ (2*pi) ) * 360); 
+    edges_vf = [min(ftT.velFor{1}):0.5:max(ftT.velFor{1})];
+    edges_vs = [min(ftT.velSide{1}):0.5:max(ftT.velSide{1})];
     edges_vy = [min(vy):15:max(vy)];
     edges_angle = [-180:10:180];
-    angle_down = ftT_down.cueAngle{1}; 
+    angle_down = ftT.cueAngle{1}; 
     
     trial_roiData = roiData(roiData.trialNum == nTrial,:);
 
@@ -28,11 +28,11 @@ function activityVSbehaviour_lineplots(ftT_down, Z, Zf, roiData, nTrial, expMd,s
 
         if ~contains(expMd.expName{1},'LAL')
             for roi = 1:size(trial_roiData,1)
-                activity = activityTable.data(activityTable.roiName == roi);
+                activity = activityTable.(3){roi};
 
                 % vf
 
-                behaviour = ftT_down.fwSpeed{1}; 
+                behaviour = ftT.velFor{1}; 
                 [vf_zscore, centers_vf] = binData(activity, behaviour, edges_vf);
                 sum_mean{1} = sum_mean{1} + vf_zscore; 
 
@@ -45,7 +45,7 @@ function activityVSbehaviour_lineplots(ftT_down, Z, Zf, roiData, nTrial, expMd,s
 
 
                 % vs 
-                behaviour = ftT_down.sideSpeed{1}; 
+                behaviour = ftT.velSide{1}; 
                 [vs_zscore, centers_vs] = binData(activity, behaviour, edges_vs);
                 sum_mean{2} = sum_mean{2} + vs_zscore; 
 
@@ -93,9 +93,9 @@ function activityVSbehaviour_lineplots(ftT_down, Z, Zf, roiData, nTrial, expMd,s
 
         else
                for roi = 1:size(trial_roiData,1)
-                    activity = activityTable.data(activityTable.roiName == roi);
+                    activity = activityTable.(3){roi};
                     % vf
-                    behaviour = ftT_down.fwSpeed{1}; 
+                    behaviour = ftT.velFor{1}; 
                     [vf_zscore, centers_vf] = binData(activity, behaviour, edges_vf);
                     sum_mean{1}(:,roi) = vf_zscore; 
 
@@ -108,7 +108,7 @@ function activityVSbehaviour_lineplots(ftT_down, Z, Zf, roiData, nTrial, expMd,s
 
 
                     % vs 
-                    behaviour = ftT_down.sideSpeed{1}; 
+                    behaviour = ftT.velSide{1}; 
                     [vs_zscore, centers_vs] = binData(activity, behaviour, edges_vs);
                     sum_mean{2}(:,roi) = vs_zscore; 
 
@@ -130,7 +130,7 @@ function activityVSbehaviour_lineplots(ftT_down, Z, Zf, roiData, nTrial, expMd,s
                     hold on
 
                     % angle
-                    [angle_zscore, centers_angle] = binData(activity, ftT_down.cueAngle{1}, edges_angle);
+                    [angle_zscore, centers_angle] = binData(activity, ftT.cueAngle{1}, edges_angle);
                     sum_mean{4}(:,roi) = angle_zscore; 
 
 

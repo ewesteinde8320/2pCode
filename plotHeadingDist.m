@@ -22,13 +22,15 @@ for i = 1:sampRate:length(behaviourData.angle) - window + 1
     angle_temp = behaviourData.angle(idx); 
     speed_temp = speed(idx); 
     angles_flyFor = angle_temp(speed_temp > minVel); 
-    x = cosd(angles_flyFor); 
-    y = sind(angles_flyFor); %my arena has - angles to the left of the fly, + to the right, multiply y component by -1 to align physical arena coords to polar plot angles
-    idx_windows(count,1) = idx(1);
-    idx_windows(count,2) = idx(end);
-    mean_headingVectors(1,count)= sum(x)/length(x); 
-    mean_headingVectors(2,count)= sum(y)/length(y); 
-    count = count + 1; 
+    if ~isempty(angles_flyFor)
+        x = cosd(angles_flyFor); 
+        y = sind(angles_flyFor); %my arena has - angles to the left of the fly, + to the right, multiply y component by -1 to align physical arena coords to polar plot angles
+        idx_windows(count,1) = idx(1);
+        idx_windows(count,2) = idx(end);
+        mean_headingVectors(1,count)= sum(x)/length(x); 
+        mean_headingVectors(2,count)= sum(y)/length(y); 
+        count = count + 1; 
+    end
 end 
 
 %% non-overlapping 60 second windows

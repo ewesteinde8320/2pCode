@@ -256,8 +256,8 @@ function foldersFailed = process2p_fictrac_data(rootDir)
 
         end
     catch 
-        foldersFailed{countFail} = parentDir;
-        countFail = countFail + 1; 
+    foldersFailed{countFail} = parentDir;
+    countFail = countFail + 1; 
     end
     end
     % testing plot
