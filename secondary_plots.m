@@ -1,10 +1,11 @@
-function foldersFailed = secondary_plots(rootDir, savePlots)
+function foldersFailed = secondary_plots(rootDir, savePlots, cutFile)
 
 %% Default settings
 
     arguments
         rootDir char
         savePlots logical = 1 
+        cutFile logical = 0 
     end
 
     
@@ -24,7 +25,7 @@ function foldersFailed = secondary_plots(rootDir, savePlots)
       
        
 %% Load in fictrac & ROI data
-       try
+       %try
             if strcmp(folder(end),'.')
                 folder = folder(1:end-2); 
             end
@@ -54,10 +55,10 @@ function foldersFailed = secondary_plots(rootDir, savePlots)
 
              processedData_dir = fullfile(folder,'processed_data');
 
-            %if ~exist(processedData_dir,'dir')
+            if ~exist(processedData_dir,'dir')
                 disp('No processed data found, running process2p_fictrac_data now')
                 process2p_fictrac_data(folder)
-            %end
+            end
 
             % Get data files
             expID = get_expID(folder);
@@ -80,12 +81,36 @@ function foldersFailed = secondary_plots(rootDir, savePlots)
         %%
         for nTrial = 1:numTrials
         %% get processed data
-
+        
             data_filelist = dir(processedData_dir);
             for files = 1:length(data_filelist)
                 if regexp(data_filelist(files).name,'.mat') & regexp(data_filelist(files).name,['00',num2str(nTrial)])
                     load(fullfile(processedData_dir,data_filelist(files).name));
                 end
+            end
+            
+            if cutFile 
+                cutStart = input('time when to start: ');
+                cutEnd = input('time when to end: ');
+                fictracTime = seconds(ftT.trialTime{nTrial});
+                
+                [startVal, startIdx] = min(abs(fictracTime-cutStart)); 
+                [endVal, endIdx] = min(abs(fictracTime-cutEnd)); 
+               
+                for field = 3:size(ftT,2)
+                    ftT.(field){1} = ftT.(field){1}(startIdx:endIdx);
+                end                    
+                for field = 2:size(ZData,2)
+                    for roi = 1:size(ZData,1)
+                        ZData.(field){roi} = ZData.(field){roi}(startIdx:endIdx); 
+                        dffData.(field){roi} = dffData.(field){roi}(startIdx:endIdx); 
+                    end
+                end
+                for field = [5,9]
+                    for roi = 1:size(roiData,1)
+                        roiData.(field){roi} = roiData.(field){roi}(startIdx:endIdx); 
+                    end
+                end                    
             end
 
          %% extract fictrac Data
@@ -204,19 +229,21 @@ function foldersFailed = secondary_plots(rootDir, savePlots)
         %     [bump_mag,bump_width,adj_rs,bump_pos] = fitVonMises(midline_distances,dff_data);
         %end
         %% locate jump idxs & start & end indicies of a window around them
+         if ~cutFile 
              windowSize = 10;
              [jump_array_down, jump_array] = detect_jumps(ftT, windowSize, 60);
 %             
              plot_jumps(jump_array, jump_array_down, ZData, ftT, expID, nTrial, jumpDir, windowSize, savePlots, 60);
+         end
 %             
         
         end
         pause(2)
         close all
-        catch
-            disp([folder,' failed to process'])
-            foldersFailed{countFail} = folder;
-            countFail = countFail + 1; 
-        end
+%         catch
+%             disp([folder,' failed to process'])
+%             foldersFailed{countFail} = folder;
+%             countFail = countFail + 1; 
+%         end
     end
 end
