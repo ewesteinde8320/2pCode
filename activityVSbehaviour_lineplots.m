@@ -19,10 +19,14 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
         if run == 1
             activityTable = Z;
             figure(Name=['Zscore vs behaviour, trial ', num2str(nTrial)]);clf
+            set(gcf,'color','w')
+            set(gcf,'Renderer','painters')
             label = 'Z'; 
         else
             activityTable = Zf;
             figure(Name=['zf_f vs behaviour, trial ', num2str(nTrial)]);clf
+            set(gcf,'color','w')
+            set(gcf,'Renderer','painters')
             label = 'df_f';
         end
 
@@ -41,6 +45,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
                 colororder(parula(roi))
                 ylabel(label)
                 xlabel('vf (mm/s)')
+                box off
                 hold on
 
 
@@ -54,6 +59,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
                 colororder(parula(roi))
                 ylabel(label)
                 xlabel('vs (mm/s)')
+                box off
                 hold on
 
                 % vy 
@@ -66,6 +72,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
                 colororder(parula(roi))
                 ylabel(label)
                 xlabel('vy (deg/s)')
+                box off
                 hold on
 
                 % angle
@@ -78,18 +85,23 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
                 colororder(parula(roi))
                 ylabel(label)
                 xlabel('cue pos (deg)')
+                box off
                 hold on
             end
 
 
                 subplot(4,1,1)
                 plot(centers_vf,sum_mean{1}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
                 subplot(4,1,2)
                 plot(centers_vs,sum_mean{2}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
                 subplot(4,1,3)
                 plot(centers_vy,sum_mean{3}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
                 subplot(4,1,4)
                 plot(centers_angle,sum_mean{4}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
 
         else
                for roi = 1:size(trial_roiData,1)
@@ -104,6 +116,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
                     ylabel(label)
                     xlabel('vf (mm/s)')
                     legend(trial_roiData.roiName,'Interpreter', 'none');
+                    box off
                     hold on
 
 
@@ -114,6 +127,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
 
                     l(2) = subplot(4,2,3);
                     plot(centers_vs,vs_zscore)
+                    box off
                     ylabel(label)
                     xlabel('vs (mm/s)')
                     hold on
@@ -125,6 +139,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
 
                     l(3) = subplot(4,2,5);
                     plot(centers_vy,vy_zscore)
+                    box off
                     ylabel(label)
                     xlabel('vy (deg/s)')
                     hold on
@@ -136,6 +151,7 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
 
                     l(4) = subplot(4,2,7);
                     plot(centers_angle,angle_zscore)
+                    box off
                     ylabel(label)
                     xlabel('cue pos (deg)')
                     hold on 
@@ -143,16 +159,20 @@ function activityVSbehaviour_lineplots(ftT, Z, Zf, roiData, nTrial, expMd,savePl
 
                 subplot(4,2,2)
                 plot(centers_vf,sum_mean{1}(:,1)-sum_mean{1}(:,2))
+                box off
                 title('L-R')
                 
                 subplot(4,2,4)
                 plot(centers_vs,sum_mean{2}(:,1)-sum_mean{2}(:,2))
+                box off
 
                 subplot(4,2,6)
                 plot(centers_vy,sum_mean{3}(:,1)-sum_mean{3}(:,2))
+                box off
 
                 subplot(4,2,8)
                 plot(centers_angle,sum_mean{4}(:,1)-sum_mean{4}(:,2))
+                box off
 
         end
 

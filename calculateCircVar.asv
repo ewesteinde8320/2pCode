@@ -1,0 +1,84 @@
+function [cVar_all, aVar_all] = calculateCircVar(ftT, sampRate, window, minVel)
+
+    window = window * sampRate; 
+    if window > length(ftT.velFor{1})
+        window = length(ftT.velFor{1}); 
+    end
+    count = 1; 
+
+
+    mean_headingVectors = [];
+    speed = sqrt(ftT.velFor{1}.^2 + ftT.velSide{1}.^2);
+%     x = cosd(ftT.cueAngle{1});
+%     y = sind(ftT.cueAngle{1});
+% %     x(speed < minVel) = nan;
+% %     y(speed < minVel) = nan; 
+%     
+%     expMovAvg = dsp.MovingAverage('Method','Exponential weighting','ForgettingFactor',0.98);
+%     x_movAvg = expMovAvg(x); 
+%     y_movAvg = expMovAvg(y); 
+%     
+%     rho = sqrt(x_movAvg.^2 + y_movAvg.^2); 
+%     theta = wrapToPi(atan2(y_movAvg,x_movAvg)); 
+%     
+%     figure(); 
+%     subplot(3,1,1)
+%     plot(seconds(ftT.trialTime{1}),ftT.cueAngle{1})
+%     xlim([min(seconds(ftT.trialTime{1})),max(seconds(ftT.trialTime{1}))])
+%     subplot(3,1,2) 
+%     plot(rho)
+%     subplot(3,1,3)
+%     plot(theta)
+%     
+    for i = 1 - window/2:1:length(ftT.cueAngle{1}) - window/2
+        idx = i:i + window; 
+        if idx(end) > length(ftT.cueAngle{1})
+            idx = idx(1):1:length(ftT.cueAngle{1});
+        elseif idx(1) < 1 
+            idx = 1:idx(end); 
+        end
+        angle_temp = ftT.cueAngle{1}(idx); 
+        speed_temp = speed(idx); 
+        angles_flyFor = angle_temp(speed_temp > minVel); 
+        if ~isempty(angles_flyFor) 
+            x = cosd(angles_flyFor); 
+            y = sind(angles_flyFor); %my arena has - angles to the left of the fly, + to the right, multiply y component by -1 to align physical arena coords to polar plot angles
+            idx_windows(count,1) = idx(1);
+            idx_windows(count,2) = idx(end);
+            mean_headingVectors(1,count)= sum(x)/length(x); 
+            mean_headingVectors(2,count)= sum(y)/length(y);
+            gradient_temp = gradient(angles_flyFor); 
+            gradient_temp(abs(gradient_temp) > 160) = 0; 
+            slope(count) = sum(gradient_temp); 
+            count = count + 1;
+        else
+            mean_headingVectors(1,count)= nan; 
+            mean_headingVectors(2,count)= nan; 
+            slope(count) = nan;
+            count = count + 1;
+        end
+    end
+    
+    rho = sqrt(mean_headingVectors(1,:).^2 + mean_headingVectors(2,:).^2); 
+    theta = wrapToPi(atan2(mean_headingVectors(2,:),mean_headingVectors(1,:))); 
+    c = 1:length(rho); 
+    
+    
+    figure();
+    ax1 = subplot(4,1,1);
+    plot(seconds(ftT.trialTime{1}),ftT.cueAngle{1})
+    xlim([min(seconds(ftT.trialTime{1})),max(seconds(ftT.trialTime{1}))])
+    ax2 = subplot(4,1,2);
+    plot(seconds(ftT.trialTime{1}),-abs(slope))
+    yline(0)
+    yline(-100)
+    xlim([min(seconds(ftT.trialTime{1})),max(seconds(ftT.trialTime{1}))])
+    ax3 = subplot(4,1,3);
+    plot(seconds(ftT.trialTime{1}),rho)
+    xlim([min(seconds(ftT.trialTime{1})),max(seconds(ftT.trialTime{1}))])
+    ax4 = subplot(4,1,4);
+    plot(seconds(ftT.trialTime{1}),rad2deg(theta))
+    xlim([min(seconds(ftT.trialTime{1})),max(seconds(ftT.trialTime{1}))])
+    linkaxes([ax1, ax2, ax3, ax4],'x')
+
+end

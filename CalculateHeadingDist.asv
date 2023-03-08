@@ -1,0 +1,38 @@
+function [rho, theta] = CalculateHeadingDist(ftT, window, minVel, data_idx)
+
+if strcmp(data_idx,'all')
+    data_idx = 1:length(ftT.cueAngle{1});
+end
+
+    for i = data_idx(1) - window/2:1:data_idx(end) - window/2
+            idx = i:i + window; 
+            if idx(end) > data_idx(end)
+                idx = idx(1):1:data_idx(end);
+            elseif idx(1) < data_idx(1) 
+                idx = data_idx(1):idx(end); 
+            end
+
+                angle_temp = ftT.cueAngle{1}(idx); 
+                speed_temp = speed(idx); 
+                angles_flyFor = angle_temp(speed_temp > minVel); 
+                if ~isempty(angles_flyFor) 
+                    x = cosd(angles_flyFor); 
+                    y = sind(angles_flyFor); %my arena has - angles to the left of the fly, + to the right, multiply y component by -1 to align physical arena coords to polar plot angles
+                    idx_windows{count,1} = idx;
+                    mean_headingVectors(1,count)= sum(x)/length(x); 
+                    mean_headingVectors(2,count)= sum(y)/length(y);
+    %                 gradient_temp = gradient(angles_flyFor); 
+    %                 gradient_temp(abs(gradient_temp) > 160) = 0; 
+    %                 slope(count) = sum(gradient_temp); 
+                    count = count + 1;
+                else
+                    mean_headingVectors(1,count)= nan; 
+                    mean_headingVectors(2,count)= nan; 
+                    slope(count) = nan;
+                    count = count + 1;
+                end
+    end
+
+    rho = sqrt(mean_headingVectors(1,:).^2 + mean_headingVectors(2,:).^2); 
+    theta = atan2(mean_headingVectors(2,:),mean_headingVectors(1,:));
+end

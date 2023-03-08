@@ -16,7 +16,7 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
 %%
 
     sum_mean = cell(3,1); 
-    vy = wrapTo180((vy/ (2*pi) ) * 360); 
+    vy = (vy/ (2*pi) ) * 360; 
     edges_vf = [min(vf):0.5:max(vf)];
     edges_vs = [min(vs):0.5:max(vs)];
     edges_vy = [min(vy):10:max(vy)];
@@ -33,10 +33,14 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
         if run == 1
             activityTable = Z;
             figure(Name=['Zscore vs behaviour no 0 vel , trial ', num2str(nTrial)]);clf
+            set(gcf,'color','w')
+            set(gcf,'Renderer','painters')
             label = 'Z'; 
         else
             activityTable = Zf;
             figure(Name=['zf_f vs behaviour, trial no 0 vel', num2str(nTrial)]);clf
+            set(gcf,'color','w')
+            set(gcf,'Renderer','painters')
             label = 'df_f';
         end
 
@@ -46,52 +50,52 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
                 activity = activity(no0vel_idx);
 
                 % vf
+% 
+%                 behaviour = vf; 
+%                 [zscore, centers_vf] = binData(activity, behaviour, edges_vf);
+%                 sum_mean{1} = sum_mean{1} + zscore; 
+% 
+%                 subplot(4,1,1);
+%                 plot(centers_vf,zscore)
+%                 colororder(parula(roi))
+%                 ylabel(label)
+%                 xlabel('vf (mm/s)')
+%                 hold on
+% 
+% 
+%                 % vs 
+%                 behaviour = vs; 
+%                 [zscore, centers_vs] = binData(activity, behaviour, edges_vs);
+%                 sum_mean{2} = sum_mean{2} + zscore; 
+% 
+%                 subplot(4,1,2);
+%                 plot(centers_vs,zscore)
+%                 colororder(parula(roi))
+%                 ylabel(label)
+%                 xlabel('vs (mm/s)')
+%                 hold on
+% 
+%                 % vy 
+%                 [zscore, centers_vy] = binData(activity, vy, edges_vy);
+%                 sum_mean{3} = sum_mean{3} + zscore; 
+% 
+% 
+%                 subplot(4,1,3);
+%                 plot(centers_vy,zscore)
+%                 colororder(parula(roi))
+%                 ylabel(label)
+%                 xlabel('vy (deg/s)')
+%                 hold on
+% 
+%                 % angle
+                [zscore, centers_angle] = binData(activity, angle, edges_angle);
+                sum_mean{4} = sum_mean{4} + zscore; 
 
-                behaviour = vf; 
-                [vf_zscore, centers_vf] = binData(activity, behaviour, edges_vf);
-                sum_mean{1} = sum_mean{1} + vf_zscore; 
 
-                subplot(4,1,1);
-                plot(centers_vf,vf_zscore)
+                %subplot(4,1,4);
+                plot(centers_angle,zscore,'DisplayName',num2str(roi))
                 colororder(parula(roi))
-                ylabel(label)
-                xlabel('vf (mm/s)')
-                hold on
-
-
-                % vs 
-                behaviour = vs; 
-                [vs_zscore, centers_vs] = binData(activity, behaviour, edges_vs);
-                sum_mean{2} = sum_mean{2} + vs_zscore; 
-
-                subplot(4,1,2);
-                plot(centers_vs,vs_zscore)
-                colororder(parula(roi))
-                ylabel(label)
-                xlabel('vs (mm/s)')
-                hold on
-
-                % vy 
-                [vy_zscore, centers_vy] = binData(activity, vy, edges_vy);
-                sum_mean{3} = sum_mean{3} + vy_zscore; 
-
-
-                subplot(4,1,3);
-                plot(centers_vy,vy_zscore)
-                colororder(parula(roi))
-                ylabel(label)
-                xlabel('vy (deg/s)')
-                hold on
-
-                % angle
-                [angle_zscore, centers_angle] = binData(activity, angle, edges_angle);
-                sum_mean{4} = sum_mean{4} + angle_zscore; 
-
-
-                subplot(4,1,4);
-                plot(centers_angle,angle_zscore)
-                colororder(parula(roi))
-                ylabel(label)
+                L{roi} = num2str(roi);
                 xlabel('cue pos (deg)')
                 hold on
             end
@@ -99,25 +103,30 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
 
                 subplot(4,1,1)
                 plot(centers_vf,sum_mean{1}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
                 subplot(4,1,2)
                 plot(centers_vs,sum_mean{2}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
                 subplot(4,1,3)
                 plot(centers_vy,sum_mean{3}/size(trial_roiData,1),'k','LineWidth',1.5)
+                box off
                 subplot(4,1,4)
                 plot(centers_angle,sum_mean{4}/size(trial_roiData,1),'k','LineWidth',1.5)
+                legend(L)
+                box off
 
         else
-               for roi = 1:size(trial_roiData,1)
+            
+            for roi = 1:size(trial_roiData,1)
                     activity = activityTable.(3){roi};
                     activity = activity(no0vel_idx);
                     
                     % vf
                     behaviour = vf; 
-                    [vf_zscore, centers_vf] = binData(activity, behaviour, edges_vf);
-                    sum_mean{1}(:,roi) = vf_zscore; 
-
+                    [zscore, centers_vf, ~] = binData(activity, behaviour, edges_vf);
+                    sum_mean{1}(:,roi) = zscore; 
                     l(1) = subplot(4,2,1);
-                    plot(centers_vf,vf_zscore)
+                    plot(centers_vf,zscore)
                     ylabel(label)
                     xlabel('vf (mm/s)')
                     legend(trial_roiData.roiName,'Interpreter', 'none');
@@ -126,33 +135,33 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
 
                     % vs 
                     behaviour = vs; 
-                    [vs_zscore, centers_vs] = binData(activity, behaviour, edges_vs);
-                    sum_mean{2}(:,roi) = vs_zscore; 
+                    [zscore, centers_vs, ~] = binData(activity, behaviour, edges_vs);
+                    sum_mean{2}(:,roi) = zscore; 
 
                     l(2) = subplot(4,2,3);
-                    plot(centers_vs,vs_zscore)
+                    plot(centers_vs,zscore)
                     ylabel(label)
                     xlabel('vs (mm/s)')
                     hold on
 
                     % vy 
-                    [vy_zscore, centers_vy] = binData(activity, vy, edges_vy);
-                    sum_mean{3}(:,roi) = vy_zscore; 
-
+                    behaviour = vy; 
+                    [zscore, centers_vy, ~] = binData(activity, behaviour, edges_vy);
+                    sum_mean{3}(:,roi) = zscore; 
 
                     l(3) = subplot(4,2,5);
-                    plot(centers_vy,vy_zscore)
+                    plot(centers_vy,zscore)
                     ylabel(label)
-                    xlabel('vy (deg/s)')
+                    xlabel('vy (mm/s)')
                     hold on
 
                     % angle
-                    [angle_zscore, centers_angle] = binData(activity, angle, edges_angle);
-                    sum_mean{4}(:,roi) = angle_zscore; 
+                    [zscore, centers_angle, ~] = binData(activity, angle, edges_angle);
+                    sum_mean{4}(:,roi) = zscore; 
 
 
                     l(4) = subplot(4,2,7);
-                    plot(centers_angle,angle_zscore)
+                    plot(centers_angle,zscore)
                     ylabel(label)
                     xlabel('cue pos (deg)')
                     hold on 
@@ -160,16 +169,20 @@ function activityVSbehaviour_no0vel_secplots(ftT, Z, Zf, roiData, nTrial, thresh
 
                 subplot(4,2,2)
                 plot(centers_vf,sum_mean{1}(:,1)-sum_mean{1}(:,2))
+                box off
                 title('L-R')
                 
                 subplot(4,2,4)
                 plot(centers_vs,sum_mean{2}(:,1)-sum_mean{2}(:,2))
+                box off
 
                 subplot(4,2,6)
                 plot(centers_vy,sum_mean{3}(:,1)-sum_mean{3}(:,2))
+                box off
 
                 subplot(4,2,8)
                 plot(centers_angle,sum_mean{4}(:,1)-sum_mean{4}(:,2))
+                box off
 
         end
 

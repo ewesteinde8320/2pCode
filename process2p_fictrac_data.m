@@ -41,7 +41,7 @@ function foldersFailed = process2p_fictrac_data(rootDir)
  
     % Analysis settings
     p = [];
-    p.smWin = 5;
+    p.smWin = 1;
     p.flType = 'expDff';
     
     % Get data files
@@ -103,7 +103,7 @@ function foldersFailed = process2p_fictrac_data(rootDir)
                 % If the ROi exists with data calculate before upsampling due to speed constraints
                 currRoiData = roiData(roiData.trialNum == nTrial & strcmp(roiData.roiName, roiName), :);
                 if ismember(roiName, roiData.roiName) && ~isempty(currRoiData) && ~contains(currRoiData.roiName,'mid') && ~isempty(currRoiData.rawFl{1}) %temp addition 
-                    % Get dF/F % not downsampled need to determine if this is matched accurately 
+                    % Get dF/F 
                     count = count + 1;
                     dff = {deltaFoverF(roiData, nTrial, roiName, p)};
                     Z = {Mad(roiData, nTrial, roiName, p)};
@@ -193,7 +193,7 @@ function foldersFailed = process2p_fictrac_data(rootDir)
                         if isnan(ftT.(col){1}(1)) || isinf(ftT.(col){1}(1))
                             ftT.(col){1}(1) = 0;
                         end
-                        ftT.(col){1} = smoothdata(ftT.(col){1},'loess',25);
+                        ftT.(col){1} = smoothdata(ftT.(col){1},'loess',15);
                      end
                 else
                     ftT(:,col) = ftT(:,col); 
@@ -238,21 +238,20 @@ function foldersFailed = process2p_fictrac_data(rootDir)
             mkdir(processed_data_dir)
         end
 
-
-        save(fullfile(processed_data_dir,['fictracData_Trial_00',num2str(nTrial),'.mat']), 'ftT','-v7.3'); 
+        save(fullfile(processed_data_dir,['fictracData_Trial_00',num2str(nTrial),'.mat']), 'ftT_minSmooth','-v7.3'); 
         save(fullfile(processed_data_dir,['df_f_Trial_00',num2str(nTrial),'.mat']), 'dffData','-v7.3');
         save(fullfile(processed_data_dir,['zscored_df_f_Trial_00',num2str(nTrial),'.mat']), 'ZData','-v7.3');
         save(fullfile(processed_data_dir,['roiData_Trial_00',num2str(nTrial),'.mat']), 'roiData','-v7.3');
 
-        ftCSV = flyg2csv(ftT,'intFor');
-        fileCSV = fullfile(processed_data_dir,['ftData_down_Trial_00',num2str(nTrial),'.csv']);
-        writetable(ftCSV,fileCSV,'Delimiter',',','QuoteStrings',true);
-        disp(['Wrote: ' fileCSV]);
-    
-        ftCSV = flyg2csv(roiData,'rawFl');
-        fileCSV = fullfile(processed_data_dir,['roiData_Trial_00',num2str(nTrial),'.csv']);
-        writetable(ftCSV,fileCSV,'Delimiter',',','QuoteStrings',true);
-        disp(['Wrote: ' fileCSV]);
+%         ftCSV = flyg2csv(ftT,'intFor');
+%         fileCSV = fullfile(processed_data_dir,['ftData_down_Trial_00',num2str(nTrial),'.csv']);
+%         writetable(ftCSV,fileCSV,'Delimiter',',','QuoteStrings',true);
+%         disp(['Wrote: ' fileCSV]);
+%     
+%         ftCSV = flyg2csv(roiData,'rawFl');
+%         fileCSV = fullfile(processed_data_dir,['roiData_Trial_00',num2str(nTrial),'.csv']);
+%         writetable(ftCSV,fileCSV,'Delimiter',',','QuoteStrings',true);
+%         disp(['Wrote: ' fileCSV]);
 
         end
     catch 

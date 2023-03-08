@@ -14,7 +14,7 @@ if window > length(behaviourData.vel_for)
 end
 count = 1; 
 
-%% overlapping 60 second windows slid by 1s increments
+%% overlapping windows slid by 1s increments
 mean_headingVectors = [];
 speed = sqrt(behaviourData.vel_for.^2 + behaviourData.vel_side.^2);
 for i = 1:sampRate:length(behaviourData.angle) - window + 1
@@ -24,7 +24,7 @@ for i = 1:sampRate:length(behaviourData.angle) - window + 1
     angles_flyFor = angle_temp(speed_temp > minVel); 
     if ~isempty(angles_flyFor)
         x = cosd(angles_flyFor); 
-        y = sind(angles_flyFor); %my arena has - angles to the left of the fly, + to the right, multiply y component by -1 to align physical arena coords to polar plot angles
+        y = sind(angles_flyFor); 
         idx_windows(count,1) = idx(1);
         idx_windows(count,2) = idx(end);
         mean_headingVectors(1,count)= sum(x)/length(x); 
@@ -33,22 +33,6 @@ for i = 1:sampRate:length(behaviourData.angle) - window + 1
     end
 end 
 
-%% non-overlapping 60 second windows
-% speed = sqrt(processed_behaviourData.vel_for.^2 + processed_behaviourData.vel_side.^2);
-% for i = 1:window:length(processed_behaviourData.angle) - window + 1
-%     idx = i:i+window-1; 
-%     angle_temp = processed_behaviourData.angle(idx); 
-%     speed_temp = speed(idx); 
-%     angles_flyFor = angle_temp(speed_temp > minVel); 
-%     x = cosd(angles_flyFor); 
-%     y = sind(angles_flyFor); %my arena has - angles to the left of the fly, + to the right, multiply y component by -1 to align physical arena coords to polar plot angles
-%     idx_windows(count,1) = idx(1);
-%     idx_windows(count,2) = idx(end);
-%     mean_headingVectors(1,count)= sum(x)/length(x); 
-%     mean_headingVectors(2,count)= sum(y)/length(y); 
-%     count = count + 1; 
-% end 
-%%
 rho = sqrt(mean_headingVectors(1,:).^2 + mean_headingVectors(2,:).^2); 
 theta = atan2(mean_headingVectors(2,:),mean_headingVectors(1,:)); 
 c = 1:length(rho); 

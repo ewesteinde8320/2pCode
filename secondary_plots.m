@@ -11,7 +11,7 @@ function foldersFailed = secondary_plots(rootDir, savePlots, cutFile)
     
 %% get folder list
     %dbstop if error
-    folders = get_folders(rootDir);
+    folders = get_folders(rootDir,1,1);
            
     
     %% Process each folder
@@ -168,11 +168,12 @@ function foldersFailed = secondary_plots(rootDir, savePlots, cutFile)
 
         %% plot activty vs behaviour
         
-         Activity_Heatmap(ftT, roiData, ZData, dffData, nTrial,savePlots, heatmapDir, expID)
+         %Activity_Heatmap(ftT, roiData, ZData, dffData, nTrial,savePlots, heatmapDir, expID)
 % 
-         activityVSbehaviour_lineplots(ftT, ZData, dffData, roiData, nTrial, expMd, savePlots,lineplotDir, expID)
+         %activityVSbehaviour_lineplots(ftT, ZData, dffData, roiData, nTrial, expMd, savePlots,lineplotDir, expID)
          threshold = 3;
-         activityVSbehaviour_no0vel_secplots(ftT, ZData, dffData, roiData, nTrial, threshold, expMd,savePlots,lineplotDir, expID)
+         %activityVSbehaviour_no0vel_secplots(ftT, ZData, dffData, roiData, nTrial, threshold, expMd,savePlots,lineplotDir, expID)
+         activityVSbehaviour_no0vel_PosterPlots(ftT, ZData, roiData, nTrial, threshold, expMd,savePlots,lineplotDir)
 
         %% heading distribution plots
         behaviourData.vel_for = ftT_fwSpeed; 

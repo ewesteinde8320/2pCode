@@ -5,7 +5,9 @@ function plotBestMenotaxisWindow(rootDir)
         flySum = flySum(~ismembertol(flySum.rhoTotal,1,10^-10),:); % gets rid of trials w/ no heading change --> indicates problem
         flySum = flySum(flySum.perMove > 5,:); % only look at trials where fly's vel was above threshold for at least 5% of the trial (30 sec)
         for f = 1:size(flySum,1)
-            folder = flySum.folder{f};
+            breakIdx = regexp(flySum.folder{f},'\');
+            trial_folder = flySum.folder{f}(breakIdx(end) + 1:end);
+            folder = fullfile(summaries(s).folder, trial_folder); 
             nTrial = flySum.trial(f); 
             processedData_dir = fullfile(folder,'processed_data');
 
@@ -34,7 +36,7 @@ function plotBestMenotaxisWindow(rootDir)
             winStart = windowInfo.windowTime{1}(1); 
             winEnd = windowInfo.windowTime{1}(end); 
             
-            winIdx = find(ftT_down.trialTime{1} >= winStart & ftT_down.trialTime{1} <= winEnd); 
+            winIdx = find(ftT.trialTime{1} >= winStart & ftT.trialTime{1} <= winEnd); 
             
             ZData = [];
             dffData = [];
