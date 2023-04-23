@@ -1,4 +1,4 @@
-function [jump_array_down, jump_array, transition] = detect_jumps(ftT, jump_window, volRate,down)
+function [jump_array_down, jump_array, transition] = detect_jumps(ftT, pre_jump_window, post_jump_window, volRate,down)
 jump_array_down = [];
 jump_array = []; 
 %% downsampled jump idx
@@ -56,15 +56,16 @@ if down
             end
         end
 
-        window_datapoints = round(jump_window*volRate); 
+        pre_window_datapoints = round(pre_jump_window*volRate); 
+        post_window_datapoints = round(post_jump_window*volRate);  
         jump_idx = find(transition == 1); 
         jump_array = zeros(length(jump_idx),3); 
 
         count = 1; 
 
         for idx = 1:length(jump_idx)
-            pre_jump = jump_idx(idx) - window_datapoints;
-            post_jump = jump_idx(idx) + window_datapoints;
+            pre_jump = jump_idx(idx) - pre_window_datapoints;
+            post_jump = jump_idx(idx) + post_window_datapoints;
             jump_array(count,1) = pre_jump; 
             jump_array(count,2) = jump_idx(idx); 
             jump_array(count,3) = post_jump; 
@@ -84,6 +85,7 @@ end
 %% original sampling rate
 if ~down
 
+    sampRate = 60; 
     yChannel = ftT.PanelsY{1}; 
     yChannel_temp = round(yChannel - [1 2 3 4]);
     yChannel_clean = zeros(size(yChannel));
@@ -140,15 +142,16 @@ if ~down
         end
     end
  
-    window_datapoints = round(jump_window*60); 
+    pre_window_datapoints = round(pre_jump_window*sampRate); 
+    post_window_datapoints = round(post_jump_window*sampRate); 
     jump_idx = find(transition == 1); 
     jump_array = zeros(length(jump_idx),4); 
 
     count = 1; 
 
     for idx = 1:length(jump_idx)
-        pre_jump = jump_idx(idx) - window_datapoints;
-        post_jump = jump_idx(idx) + window_datapoints;
+        pre_jump = jump_idx(idx) - pre_window_datapoints;
+        post_jump = jump_idx(idx) + post_window_datapoints;
         jump_array(count,1) = pre_jump; 
         jump_array(count,2) = jump_idx(idx); 
         jump_array(count,3) = post_jump; 

@@ -123,7 +123,7 @@ function activityVSbehaviour_PFL2Summary_goalAmp(rootDir)
             rho_all = sqrt(mean_headingVectors(1,:).^2 + mean_headingVectors(2,:).^2);
             rho = rho_all(no0vel_idx);
             rho = rho';
-
+            
 
 
         %%
@@ -151,6 +151,7 @@ function activityVSbehaviour_PFL2Summary_goalAmp(rootDir)
             activity = PFL2fit_params.goalAmp;
             activity = activity(no0vel_idx);
             activity = activity';
+            activity = PFL2fit_params.rs(no0vel_idx)';
 
             %vf 
             behaviour = vf; 
@@ -310,7 +311,7 @@ function activityVSbehaviour_PFL2Summary_goalAmp(rootDir)
             ax1.YAxis.Exponent = 0;
             ax2.YAxis.Exponent = 0;
             xlabel('rho')
-            ylabel('goal amplitude')
+            ylabel('R')
 
             
 
